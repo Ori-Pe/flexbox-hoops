@@ -1,4 +1,5 @@
 import { LEVELS } from './levels.js';
+import { parseDeclarations } from './parser.js';
 
 const RING_COLORS = ['#f4822a', '#29aaed', '#2dcfb3', '#7c3aed'];
 
@@ -93,10 +94,62 @@ function renderLevelIndicator() {
   els.levelIndicator.textContent = `Level ${state.levelIndex + 1} of ${LEVELS.length}`;
 }
 
+function blockLabel(target) {
+  return target.kind === 'container' ? '.court' : `.ball:nth-child(${target.index + 1})`;
+}
+
+function userStyles(level) {
+  const containerStyle = { ...level.base };
+  const itemStyles = {};
+
+  level.editableTargets.forEach((target, i) => {
+    const parsed = parseDeclarations(state.texts[i] || '');
+    if (target.kind === 'container') {
+      Object.assign(containerStyle, parsed);
+    } else {
+      itemStyles[target.index] = { ...(itemStyles[target.index] || {}), ...parsed };
+    }
+  });
+
+  return { containerStyle, itemStyles };
+}
+
+function applyUserStyles() {
+  const level = LEVELS[state.levelIndex];
+  const { containerStyle, itemStyles } = userStyles(level);
+  applyContainerStyle(els.ballLayer, containerStyle);
+  Array.from(els.ballLayer.children).forEach((ballEl, index) => {
+    if (itemStyles[index]) applyItemStyle(ballEl, itemStyles[index]);
+  });
+}
+
+function renderEditor(level) {
+  state.texts = level.editableTargets.map(() => '');
+  els.editorBlocks.innerHTML = '';
+
+  level.editableTargets.forEach((target, i) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'css-block';
+    wrapper.innerHTML = `
+      <div class="css-block__open">${blockLabel(target)} {</div>
+      <textarea placeholder="${target.kind === 'container' ? '  justify-content: …;' : '  order: …;'}"></textarea>
+      <div class="css-block__close">}</div>
+    `;
+    const textarea = wrapper.querySelector('textarea');
+    textarea.addEventListener('input', () => {
+      state.texts[i] = textarea.value;
+      applyUserStyles();
+    });
+    els.editorBlocks.appendChild(wrapper);
+  });
+}
+
 function renderLevel() {
   const level = LEVELS[state.levelIndex];
   renderBasketLayer(level);
   renderBallLayer(level);
+  renderEditor(level);
+  applyUserStyles();
   renderObjective(level);
   renderLevelIndicator();
   renderLevelNav();
@@ -118,6 +171,7 @@ export function init(root) {
     hintText: root.querySelector('#hint-text'),
     hintToggle: root.querySelector('#hint-toggle'),
     successOverlay: root.querySelector('#success-overlay'),
+    editorBlocks: root.querySelector('#editor-blocks'),
   };
 
   els.hintToggle.addEventListener('click', () => {
