@@ -88,11 +88,16 @@ function renderBallLayer(level) {
   }
 }
 
+function setHintToggleLabel(expanded) {
+  els.hintToggleLabel.textContent = expanded ? 'Hide hint' : 'Show hint';
+}
+
 function renderObjective(level) {
   els.objectiveText.textContent = level.goal;
   els.hintText.textContent = level.hint;
   els.hintText.hidden = true;
-  els.hintToggle.textContent = 'Show hint';
+  els.hintToggle.setAttribute('aria-expanded', 'false');
+  setHintToggleLabel(false);
 }
 
 function renderLevelIndicator() {
@@ -102,6 +107,8 @@ function renderLevelIndicator() {
 function renderSolvedCounter() {
   const solvedCount = Object.keys(state.progress.solved).length;
   els.solvedCounter.textContent = `${solvedCount} / ${LEVELS.length} solved`;
+  const pct = Math.round((solvedCount / LEVELS.length) * 100);
+  els.progressFill.style.width = `${pct}%`;
 }
 
 function blockLabel(target) {
@@ -245,12 +252,14 @@ export function init(root) {
   els = {
     levelIndicator: root.querySelector('#level-indicator'),
     levelNav: root.querySelector('#level-nav'),
+    progressFill: root.querySelector('#progress-fill'),
     court: root.querySelector('#court'),
     basketLayer: root.querySelector('#basket-layer'),
     ballLayer: root.querySelector('#ball-layer'),
     objectiveText: root.querySelector('#objective-text'),
     hintText: root.querySelector('#hint-text'),
     hintToggle: root.querySelector('#hint-toggle'),
+    hintToggleLabel: root.querySelector('#hint-toggle-label'),
     successOverlay: root.querySelector('#success-overlay'),
     editorBlocks: root.querySelector('#editor-blocks'),
     checkMessage: root.querySelector('#check-message'),
@@ -265,7 +274,8 @@ export function init(root) {
 
   els.hintToggle.addEventListener('click', () => {
     els.hintText.hidden = !els.hintText.hidden;
-    els.hintToggle.textContent = els.hintText.hidden ? 'Show hint' : 'Hide hint';
+    setHintToggleLabel(!els.hintText.hidden);
+    els.hintToggle.setAttribute('aria-expanded', String(!els.hintText.hidden));
   });
   els.checkBtn.addEventListener('click', handleCheck);
   els.resetBtn.addEventListener('click', handleReset);
