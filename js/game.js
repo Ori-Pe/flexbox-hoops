@@ -1,5 +1,6 @@
 import { LEVELS } from './levels.js';
 import { parseDeclarations } from './parser.js';
+import { isAligned } from './geometry.js';
 
 const RING_COLORS = ['#f4822a', '#29aaed', '#2dcfb3', '#7c3aed'];
 
@@ -144,8 +145,56 @@ function renderEditor(level) {
   });
 }
 
+function ballBasketPairs() {
+  const balls = Array.from(els.ballLayer.children);
+  const baskets = Array.from(els.basketLayer.children);
+  return balls.map((ball, i) => [ball, baskets[i]]);
+}
+
+function isLevelSolved() {
+  return ballBasketPairs().every(([ball, basket]) =>
+    isAligned(ball.getBoundingClientRect(), basket.getBoundingClientRect())
+  );
+}
+
+function showCheckMessage(text, kind) {
+  els.checkMessage.hidden = false;
+  els.checkMessage.textContent = text;
+  els.checkMessage.className = `check-message check-message--${kind}`;
+}
+
+function handleWrong() {
+  showCheckMessage('Not quite — try again.', 'error');
+  els.court.classList.remove('court--wrong');
+  void els.court.offsetWidth; // restart the shake animation even on repeated wrong answers
+  els.court.classList.add('court--wrong');
+}
+
+function handleSuccess() {
+  els.checkMessage.hidden = true;
+  els.successOverlay.hidden = false;
+}
+
+function handleCheck() {
+  if (isLevelSolved()) {
+    handleSuccess();
+  } else {
+    handleWrong();
+  }
+}
+
+function handleReset() {
+  const level = LEVELS[state.levelIndex];
+  state.texts = level.editableTargets.map(() => '');
+  Array.from(els.editorBlocks.querySelectorAll('textarea')).forEach((t) => { t.value = ''; });
+  applyUserStyles();
+  els.checkMessage.hidden = true;
+}
+
 function renderLevel() {
   const level = LEVELS[state.levelIndex];
+  els.court.classList.remove('court--wrong');
+  els.checkMessage.hidden = true;
   renderBasketLayer(level);
   renderBallLayer(level);
   renderEditor(level);
@@ -165,6 +214,7 @@ export function init(root) {
   els = {
     levelIndicator: root.querySelector('#level-indicator'),
     levelNav: root.querySelector('#level-nav'),
+    court: root.querySelector('#court'),
     basketLayer: root.querySelector('#basket-layer'),
     ballLayer: root.querySelector('#ball-layer'),
     objectiveText: root.querySelector('#objective-text'),
@@ -172,12 +222,17 @@ export function init(root) {
     hintToggle: root.querySelector('#hint-toggle'),
     successOverlay: root.querySelector('#success-overlay'),
     editorBlocks: root.querySelector('#editor-blocks'),
+    checkMessage: root.querySelector('#check-message'),
+    checkBtn: root.querySelector('#check-btn'),
+    resetBtn: root.querySelector('#reset-btn'),
   };
 
   els.hintToggle.addEventListener('click', () => {
     els.hintText.hidden = !els.hintText.hidden;
     els.hintToggle.textContent = els.hintText.hidden ? 'Show hint' : 'Hide hint';
   });
+  els.checkBtn.addEventListener('click', handleCheck);
+  els.resetBtn.addEventListener('click', handleReset);
 
   renderLevel();
 }
