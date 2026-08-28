@@ -1,11 +1,14 @@
 import { LEVELS } from './levels.js';
 import { parseDeclarations } from './parser.js';
 import { isAligned } from './geometry.js';
+import { defaultProgress, loadProgress, saveProgress } from './progress.js';
+import { attemptCount, recordAttempt, resetAttemptsFor } from './scoring.js';
 
 const RING_COLORS = ['#f4822a', '#29aaed', '#2dcfb3', '#7c3aed'];
 
 const state = {
   levelIndex: 0,
+  progress: defaultProgress(),
 };
 
 let els = {};
@@ -60,6 +63,7 @@ function renderLevelNav() {
     chip.textContent = String(index + 1);
     chip.title = level.title;
     if (index === state.levelIndex) chip.classList.add('level-chip--current');
+    if (state.progress.solved[level.id]) chip.classList.add('level-chip--solved');
     chip.addEventListener('click', () => goToLevel(index));
     els.levelNav.appendChild(chip);
   });
@@ -93,6 +97,11 @@ function renderObjective(level) {
 
 function renderLevelIndicator() {
   els.levelIndicator.textContent = `Level ${state.levelIndex + 1} of ${LEVELS.length}`;
+}
+
+function renderSolvedCounter() {
+  const solvedCount = Object.keys(state.progress.solved).length;
+  els.solvedCounter.textContent = `${solvedCount} / ${LEVELS.length} solved`;
 }
 
 function blockLabel(target) {
@@ -164,14 +173,22 @@ function showCheckMessage(text, kind) {
 }
 
 function handleWrong() {
-  showCheckMessage('Not quite — try again.', 'error');
+  const level = LEVELS[state.levelIndex];
+  state.progress.attempts = recordAttempt(state.progress.attempts, level.id);
+  saveProgress(state.progress);
+  showCheckMessage(`Not quite — try again. (attempt ${attemptCount(state.progress.attempts, level.id)})`, 'error');
   els.court.classList.remove('court--wrong');
-  void els.court.offsetWidth; // restart the shake animation even on repeated wrong answers
+  void els.court.offsetWidth;
   els.court.classList.add('court--wrong');
 }
 
 function handleSuccess() {
+  const level = LEVELS[state.levelIndex];
+  state.progress.solved[level.id] = true;
+  saveProgress(state.progress);
   els.checkMessage.hidden = true;
+  renderLevelNav();
+  renderSolvedCounter();
   els.successOverlay.hidden = false;
 }
 
@@ -189,6 +206,8 @@ function handleReset() {
   Array.from(els.editorBlocks.querySelectorAll('textarea')).forEach((t) => { t.value = ''; });
   applyUserStyles();
   els.checkMessage.hidden = true;
+  state.progress.attempts = resetAttemptsFor(state.progress.attempts, level.id);
+  saveProgress(state.progress);
 }
 
 function renderLevel() {
@@ -202,12 +221,20 @@ function renderLevel() {
   renderObjective(level);
   renderLevelIndicator();
   renderLevelNav();
+  renderSolvedCounter();
   els.successOverlay.hidden = true;
 }
 
 function goToLevel(index) {
   state.levelIndex = index;
+  state.progress.currentLevel = index;
+  saveProgress(state.progress);
   renderLevel();
+}
+
+function goToNextLevel() {
+  const isLast = state.levelIndex >= LEVELS.length - 1;
+  goToLevel(isLast ? 0 : state.levelIndex + 1);
 }
 
 export function init(root) {
@@ -225,7 +252,12 @@ export function init(root) {
     checkMessage: root.querySelector('#check-message'),
     checkBtn: root.querySelector('#check-btn'),
     resetBtn: root.querySelector('#reset-btn'),
+    nextLevelBtn: root.querySelector('#next-level-btn'),
+    solvedCounter: root.querySelector('#solved-counter'),
   };
+
+  state.progress = loadProgress();
+  state.levelIndex = state.progress.currentLevel || 0;
 
   els.hintToggle.addEventListener('click', () => {
     els.hintText.hidden = !els.hintText.hidden;
@@ -233,6 +265,8 @@ export function init(root) {
   });
   els.checkBtn.addEventListener('click', handleCheck);
   els.resetBtn.addEventListener('click', handleReset);
+  els.nextLevelBtn.addEventListener('click', goToNextLevel);
 
   renderLevel();
+  renderSolvedCounter();
 }
