@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flexbox Hoops</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <h1 class="app-title">Flexbox Hoops</h1>
+      <div class="level-indicator" id="level-indicator"></div>
+      <nav class="level-nav" id="level-nav"></nav>
+    </header>
+
+    <main class="game-main">
+      <div class="court-wrapper">
+        <div class="court" id="court">
+          <div class="court-layer court-layer--baskets" id="basket-layer"></div>
+          <div class="court-layer court-layer--balls" id="ball-layer"></div>
+
+          <div class="success-overlay" id="success-overlay" hidden>
+            <div class="success-overlay__scene">
+              <div class="shooter"><div class="shooter__ball" id="success-ball"></div></div>
+              <div class="success-overlay__hoop">
+                <div class="success-overlay__hoop-backboard"></div>
+                <div class="success-overlay__hoop-rim"></div>
+                <div class="success-overlay__hoop-net"></div>
+              </div>
+            </div>
+            <div class="success-overlay__title">Nothing but net</div>
+            <div class="success-overlay__subtitle" id="success-subtitle"></div>
+            <button class="btn btn--primary" id="next-level-btn">Next Level →</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side-panel">
+        <section class="panel-card">
+          <h2 class="panel-card__label">Objective</h2>
+          <p class="objective-text" id="objective-text"></p>
+          <button class="hint-toggle" id="hint-toggle">Show hint</button>
+          <p class="hint-text" id="hint-text" hidden></p>
+        </section>
+
+        <section class="panel-card panel-card--editor">
+          <div class="panel-card__header">
+            <h2 class="panel-card__label">CSS Editor</h2>
+            <span class="live-dot"></span>
+          </div>
+          <div id="editor-blocks"></div>
+          <p class="check-message" id="check-message" hidden></p>
+          <div class="editor-actions">
+            <button class="btn" id="reset-btn">Reset</button>
+            <button class="btn btn--primary" id="check-btn">Check Solution</button>
+          </div>
+          <div class="solved-counter" id="solved-counter"></div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
