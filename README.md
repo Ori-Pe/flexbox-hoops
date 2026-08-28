@@ -14,6 +14,11 @@ python3 -m http.server 8000
 
 Then open `http://localhost:8000`.
 
+The page must be served over HTTP — opening `index.html` directly via
+`file://` will show a blank page, because ES modules
+(`<script type="module">`) are blocked by CORS under the `file://`
+protocol.
+
 ## Running tests
 
 ```
@@ -35,6 +40,10 @@ test runner — zero dependencies to install.
   attempt counting.
 - `js/game.js`, `js/main.js` — DOM rendering, event wiring, bootstrap.
 - `tests/` — one test file per pure module above.
+- `docs/superpowers/` (and the gitignored `.superpowers/`) — this
+  project's planning/process artifacts (design spec, implementation plan,
+  SDD ledger). Not part of the shipped game itself, which is
+  `index.html`, `css/`, and `js/`.
 
 ## Status
 

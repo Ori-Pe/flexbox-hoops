@@ -82,7 +82,7 @@ export const LEVELS = [
   {
     id: 'bottom-up',
     title: 'Bottom Up',
-    goal: 'Stacked, reversed, and pushed to the bottom of the court.',
+    goal: 'Stacked, reversed, and pushed to the top of the court.',
     hint: 'Combine column-reverse with a justify-content value. With column-reverse the main axis starts at the bottom.',
     ballCount: 3,
     base: {},
@@ -113,11 +113,11 @@ export const LEVELS = [
     id: 'full-roster',
     title: 'Full Roster',
     goal: 'Eight balls, two rows of baskets. They will not fit on one line.',
-    hint: 'flex-wrap: wrap lets items break onto new lines instead of overflowing.',
+    hint: 'flex-wrap: wrap lets items break onto new lines instead of overflowing. You\'ll also need align-content to space the two lines.',
     ballCount: 8,
-    base: { gap: '20px', alignContent: 'space-between' },
+    base: { gap: '20px' },
     editableTargets: [{ kind: 'container' }],
-    solution: { container: { flexWrap: 'wrap' } },
+    solution: { container: { flexWrap: 'wrap', alignContent: 'space-between' } },
   },
 ];
 

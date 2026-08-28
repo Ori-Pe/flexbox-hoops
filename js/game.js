@@ -129,6 +129,8 @@ function applyUserStyles() {
   const { containerStyle, itemStyles } = userStyles(level);
   applyContainerStyle(els.ballLayer, containerStyle);
   Array.from(els.ballLayer.children).forEach((ballEl, index) => {
+    ballEl.removeAttribute('style');
+    ballEl.style.setProperty('--ring-color', ringColor(index));
     if (itemStyles[index]) applyItemStyle(ballEl, itemStyles[index]);
   });
 }
@@ -178,11 +180,12 @@ function handleWrong() {
   saveProgress(state.progress);
   showCheckMessage(`Not quite — try again. (attempt ${attemptCount(state.progress.attempts, level.id)})`, 'error');
   els.court.classList.remove('court--wrong');
-  void els.court.offsetWidth;
+  void els.court.offsetWidth; // restart the shake animation even on repeated wrong answers
   els.court.classList.add('court--wrong');
 }
 
 function handleSuccess() {
+  els.court.classList.remove('court--wrong');
   const level = LEVELS[state.levelIndex];
   state.progress.solved[level.id] = true;
   saveProgress(state.progress);
@@ -201,6 +204,7 @@ function handleCheck() {
 }
 
 function handleReset() {
+  els.court.classList.remove('court--wrong');
   const level = LEVELS[state.levelIndex];
   state.texts = level.editableTargets.map(() => '');
   Array.from(els.editorBlocks.querySelectorAll('textarea')).forEach((t) => { t.value = ''; });
@@ -257,7 +261,7 @@ export function init(root) {
   };
 
   state.progress = loadProgress();
-  state.levelIndex = state.progress.currentLevel || 0;
+  state.levelIndex = Math.min(Math.max(state.progress.currentLevel || 0, 0), LEVELS.length - 1);
 
   els.hintToggle.addEventListener('click', () => {
     els.hintText.hidden = !els.hintText.hidden;
