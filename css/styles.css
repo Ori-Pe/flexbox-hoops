@@ -596,14 +596,7 @@ body {
 }
 .hint-text { margin: var(--space-2) 0 0; font-size: 12.5px; line-height: 1.5; color: var(--navy-600); }
 
-.panel-card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-1); }
-.live-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--teal-500);
-  box-shadow: 0 0 0 3px rgba(23, 201, 143, 0.18);
-}
+.panel-card__header { display: flex; align-items: center; margin-bottom: var(--space-1); }
 
 .css-block {
   border: 1px solid var(--paper-line);
