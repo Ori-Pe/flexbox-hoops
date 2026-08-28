@@ -74,7 +74,11 @@ body {
   position: absolute;
   inset: 0;
   display: flex;
-  padding: 16px;
+  /* Extra top clearance: .basket__backboard sits 30px above its basket's
+     own top edge (see below), so a basket flush with the top of this
+     layer needs more than 16px of headroom or its backboard renders
+     outside the court and gets clipped by .court-wrapper's overflow. */
+  padding: 34px 16px 16px;
 }
 .court-layer--baskets { z-index: 1; opacity: 0.6; }
 .court-layer--balls { z-index: 2; }
