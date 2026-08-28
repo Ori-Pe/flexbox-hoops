@@ -187,10 +187,12 @@ body {
   100% { transform: translateY(0); }
 }
 @keyframes shooter-arm {
-  0%   { transform: rotate(48deg); }
-  16%  { transform: rotate(-38deg); }
-  46%  { transform: rotate(-16deg); }
-  100% { transform: rotate(6deg); }
+  0%   { transform: rotate(15deg); }
+  10%  { transform: rotate(-70deg); }
+  22%  { transform: rotate(-175deg); }
+  38%  { transform: rotate(-190deg); }
+  70%  { transform: rotate(-165deg); }
+  100% { transform: rotate(-150deg); }
 }
 .shooter {
   position: absolute;
