@@ -1,0 +1,10 @@
+{
+  "name": "flexbox-hoops",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A basketball-themed game for learning CSS Flexbox.",
+  "scripts": {
+    "test": "node --test tests/**/*.test.js"
+  }
+}
