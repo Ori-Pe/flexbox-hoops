@@ -156,6 +156,11 @@ body {
     repeating-linear-gradient(-48deg, rgba(15, 27, 45, 0.4) 0 1px, transparent 1px 8px);
 }
 
+@keyframes overlay-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .success-overlay {
   position: absolute;
   inset: 0;
@@ -164,86 +169,151 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 6px;
   background: rgba(242, 240, 238, 0.92);
   backdrop-filter: blur(6px);
   border-radius: 8px;
+  animation: overlay-fade-up 0.22s ease-out both;
 }
 .success-overlay[hidden] { display: none; }
 
-.success-overlay__scene { position: relative; width: 260px; height: 150px; }
+.success-overlay__scene { position: relative; width: 440px; height: 290px; max-width: 100%; }
 
-.shooter { position: absolute; left: 10px; bottom: 0; width: 40px; height: 70px; }
-.shooter::before {
-  content: '';
+/* --- shooter figure --- */
+@keyframes shooter-hop {
+  0%   { transform: translateY(0); }
+  18%  { transform: translateY(-16px); }
+  40%  { transform: translateY(0); }
+  100% { transform: translateY(0); }
+}
+@keyframes shooter-arm {
+  0%   { transform: rotate(48deg); }
+  16%  { transform: rotate(-38deg); }
+  46%  { transform: rotate(-16deg); }
+  100% { transform: rotate(6deg); }
+}
+.shooter {
   position: absolute;
-  top: 0; left: 10px;
-  width: 20px; height: 20px;
+  left: 8px;
+  bottom: 0;
+  width: 74px;
+  height: 132px;
+  animation: shooter-hop 1.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.shooter__head {
+  position: absolute; left: 26px; top: 0;
+  width: 22px; height: 22px;
   border-radius: 50%;
   background: #1a2f7a;
 }
-.shooter::after {
-  content: '';
-  position: absolute;
-  top: 18px; left: 6px;
-  width: 28px; height: 40px;
+.shooter__torso {
+  position: absolute; left: 23px; top: 24px;
+  width: 28px; height: 44px;
   border-radius: 9px;
   background: #1a2f7a;
-  animation: shooter-lean 1.6s ease-in-out both;
+}
+.shooter__leg {
+  position: absolute; top: 66px;
+  width: 9px; height: 40px;
+  border-radius: 5px;
+  background: #1a2f7a;
+}
+.shooter__leg--left { left: 26px; transform: rotate(9deg); }
+.shooter__leg--right { left: 39px; transform: rotate(-11deg); }
+.shooter__arm {
+  position: absolute; top: 28px;
+  width: 9px; height: 34px;
+  border-radius: 5px;
+  transform-origin: top center;
+  animation: shooter-arm 1.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.shooter__arm--throw { left: 44px; background: #1a2f7a; }
+.shooter__arm--guide { left: 20px; background: #2a4296; animation-delay: 0.05s; }
+.shooter__shadow {
+  position: absolute; left: 0; bottom: -8px;
+  width: 74px; height: 10px;
+  border-radius: 50%;
+  background: rgba(26, 47, 122, 0.16);
+}
+
+/* --- ball in flight --- */
+@keyframes ball-arc {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  14%  { transform: translate(18px, -40px) rotate(90deg); }
+  46%  { transform: translate(136px, -198px) rotate(340deg); }
+  72%  { transform: translate(240px, -116px) rotate(560deg); }
+  84%  { transform: translate(264px, -78px) rotate(640deg); }
+  100% { transform: translate(270px, -2px) rotate(720deg); }
 }
 .shooter__ball {
   position: absolute;
-  width: 26px;
-  height: 26px;
+  left: 56px;
+  bottom: 104px;
+  width: 40px;
+  height: 40px;
+  animation: ball-arc 1.7s cubic-bezier(0.32, 0.06, 0.5, 1) both;
+}
+.shooter__ball-body {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+  overflow: hidden;
+  position: relative;
   background: radial-gradient(circle at 34% 28%, #ffab68, #e8701a 58%, #bf560f);
-  animation: shooter-arc 1.6s cubic-bezier(0.32, 0.06, 0.5, 1) both;
+  box-shadow: inset -3px -4px 9px rgba(70, 26, 0, 0.30), 0 6px 14px rgba(26, 47, 122, 0.26);
 }
+.shooter__ball-body::before,
+.shooter__ball-body::after { content: ''; position: absolute; background: rgba(70, 26, 0, 0.5); }
+.shooter__ball-body::before { left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; }
+.shooter__ball-body::after { top: 0; bottom: 0; left: 50%; width: 2px; margin-left: -1px; }
 
-@keyframes shooter-lean {
-  0%, 55% { transform: rotate(0deg); }
-  75% { transform: rotate(-12deg); }
-  100% { transform: rotate(-12deg); }
+/* --- hoop --- */
+.success-overlay__hoop { position: absolute; right: 12px; bottom: 96px; width: 96px; height: 120px; }
+.success-overlay__hoop-pole {
+  position: absolute; right: 0; top: 0;
+  width: 12px; height: 120px;
+  border-radius: 3px;
+  background: rgba(26, 47, 122, 0.22);
 }
-@keyframes shooter-arc {
-  0%, 55% { left: 30px; top: 10px; transform: rotate(0deg) scale(1); opacity: 1; }
-  75% { left: 130px; top: -40px; transform: rotate(200deg) scale(0.9); opacity: 1; }
-  92% { left: 210px; top: 20px; transform: rotate(380deg) scale(0.8); opacity: 1; }
-  100% { left: 210px; top: 20px; transform: rotate(380deg) scale(0.8); opacity: 0; }
-}
-
-.success-overlay__hoop { position: absolute; right: 10px; top: 10px; width: 60px; height: 90px; }
 .success-overlay__hoop-backboard {
-  position: absolute; top: 0; right: 0;
-  width: 44px; height: 30px;
+  position: absolute; right: 6px; top: 2px;
+  width: 56px; height: 44px;
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.9);
-  border: 1.5px solid rgba(26, 47, 122, 0.3);
+  border: 1.5px solid rgba(26, 47, 122, 0.24);
+  box-shadow: 0 4px 12px rgba(26, 47, 122, 0.12);
 }
 .success-overlay__hoop-rim {
-  position: absolute; top: 26px; right: 4px;
-  width: 36px; height: 10px;
+  position: absolute; right: 56px; top: 38px;
+  width: 52px; height: 14px;
   border-radius: 50%;
-  border: 3px solid #f4822a;
+  border: 4px solid #f4822a;
 }
 .success-overlay__hoop-net {
-  position: absolute; top: 30px; right: 8px;
-  width: 28px; height: 26px;
+  position: absolute; right: 60px; top: 44px;
+  width: 44px; height: 38px;
   transform-origin: top center;
   clip-path: polygon(0 0, 100% 0, 76% 100%, 24% 100%);
   background:
     repeating-linear-gradient(48deg, rgba(26, 47, 122, 0.4) 0 1.5px, transparent 1.5px 9px),
     repeating-linear-gradient(-48deg, rgba(26, 47, 122, 0.4) 0 1.5px, transparent 1.5px 9px);
-  animation: hoop-net-swish 0.5s ease-out 1.3s both;
+  animation: hoop-net-swish 0.5s ease-out 1.32s both;
 }
 @keyframes hoop-net-swish {
   0% { transform: scaleY(1) skewX(0deg); }
-  35% { transform: scaleY(1.5) skewX(5deg); }
-  70% { transform: scaleY(0.88) skewX(-3deg); }
+  35% { transform: scaleY(1.55) skewX(5deg); }
+  70% { transform: scaleY(0.86) skewX(-3deg); }
   100% { transform: scaleY(1) skewX(0deg); }
 }
 
-.success-overlay__title { font-size: 28px; font-weight: 700; color: #1a2f7a; }
+.success-overlay__result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: overlay-fade-up 0.3s ease-out 1.5s both;
+}
+.success-overlay__title { margin: 0; font-size: 28px; font-weight: 700; color: #1a2f7a; }
 .success-overlay__subtitle { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #5a6fa8; }
 
 .side-panel {

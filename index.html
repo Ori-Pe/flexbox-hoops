@@ -22,16 +22,30 @@
 
           <div class="success-overlay" id="success-overlay" hidden>
             <div class="success-overlay__scene">
-              <div class="shooter"><div class="shooter__ball" id="success-ball"></div></div>
+              <div class="shooter">
+                <div class="shooter__head"></div>
+                <div class="shooter__torso"></div>
+                <div class="shooter__leg shooter__leg--left"></div>
+                <div class="shooter__leg shooter__leg--right"></div>
+                <div class="shooter__arm shooter__arm--throw"></div>
+                <div class="shooter__arm shooter__arm--guide"></div>
+                <div class="shooter__shadow"></div>
+              </div>
+              <div class="shooter__ball" id="success-ball">
+                <div class="shooter__ball-body"></div>
+              </div>
               <div class="success-overlay__hoop">
+                <div class="success-overlay__hoop-pole"></div>
                 <div class="success-overlay__hoop-backboard"></div>
                 <div class="success-overlay__hoop-rim"></div>
                 <div class="success-overlay__hoop-net"></div>
               </div>
             </div>
-            <div class="success-overlay__title">Nothing but net</div>
-            <div class="success-overlay__subtitle" id="success-subtitle"></div>
-            <button class="btn btn--primary" id="next-level-btn">Next Level →</button>
+            <div class="success-overlay__result">
+              <div class="success-overlay__title">Nothing but net</div>
+              <div class="success-overlay__subtitle" id="success-subtitle"></div>
+              <button class="btn btn--primary" id="next-level-btn">Next Level →</button>
+            </div>
           </div>
         </div>
       </div>
