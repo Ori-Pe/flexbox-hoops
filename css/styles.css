@@ -366,8 +366,21 @@ body {
 }
 
 /* ==========================================================================
-   Success overlay — geometry/animation timings are hand-tuned (see
-   e2e/level-flow.spec.js + e2e-report.md); only colors are themed here.
+   Success overlay — illustrated inline-SVG scene. Geometry lives in
+   index.html (viewBox 0 0 300 198, 1 unit = 1px); this file only themes
+   colors/gradients and drives the shot-animation timeline. Animation
+   timings are hand-tuned (see e2e/visual-responsive-overlay.spec.js).
+
+   Shot sequence (900ms body/legs/arms/shadow "both"-held pose, layered
+   with a longer ball flight + net swish + result fade-in on top):
+     0 –  360ms  crouch (knee-bend load-up) → explosive jump + arm raise
+     ~340ms      release, wrist follow-through snap on the shooting hand
+     360– 900ms  ball carries the arc while the body lands (soft knee
+                 bend) and settles into the held follow-through pose
+     ~1520ms     ball reaches the rim → net swish
+     1600–1900ms result panel (title/button) fades up
+   Total settle ≈ 1.9s, comfortably under the ~2.2s "snappy win-screen"
+   guideline.
    ========================================================================== */
 @keyframes overlay-fade-up {
   from { opacity: 0; transform: translateY(10px); }
@@ -390,136 +403,180 @@ body {
 }
 .success-overlay[hidden] { display: none; }
 
-.success-overlay__scene { position: relative; flex-shrink: 0; width: 300px; height: 198px; max-width: 100%; }
+.success-overlay__scene {
+  display: block;
+  flex-shrink: 0;
+  width: 300px;
+  height: 198px;
+  max-width: 100%;
+  overflow: visible;
+}
 
-/* --- shooter figure --- */
+/* --- court floor --- */
+.success-overlay__floor-boards { fill: url(#sg-court); }
+.success-overlay__floor-planks line { stroke: rgba(0, 0, 0, 0.08); stroke-width: 1; }
+.success-overlay__floor-arc,
+.success-overlay__floor-lane,
+.success-overlay__floor-circle {
+  fill: none;
+  stroke: var(--court-line);
+  stroke-width: 1.5;
+}
+.success-overlay__floor-arc { opacity: 0.5; }
+.success-overlay__floor-lane { opacity: 0.55; }
+.success-overlay__floor-circle { opacity: 0.55; }
+
+/* --- hoop --- */
+.success-overlay__hoop-pole { fill: rgba(26, 47, 122, 0.28); }
+.success-overlay__hoop-backboard {
+  fill: url(#sg-board);
+  stroke: rgba(26, 47, 122, 0.28);
+  stroke-width: 1.5;
+}
+.success-overlay__hoop-square {
+  fill: none;
+  stroke: rgba(26, 47, 122, 0.35);
+  stroke-width: 1.2;
+}
+.success-overlay__hoop-rim {
+  fill: none;
+  stroke: url(#sg-rim);
+  stroke-width: 3;
+}
+.success-overlay__hoop-net {
+  fill: rgba(26, 47, 122, 0.10);
+  transform-origin: 235px 80px;
+  animation: hoop-net-swish 0.4s ease-out 0.98s both;
+}
+.success-overlay__hoop-net-lines line {
+  stroke: rgba(26, 47, 122, 0.45);
+  stroke-width: 1.1;
+  transform-origin: 235px 80px;
+  animation: hoop-net-swish 0.4s ease-out 0.98s both;
+}
+@keyframes hoop-net-swish {
+  0%   { transform: scaleY(1) skewX(0deg); }
+  30%  { transform: scaleY(1.5) skewX(6deg); animation-timing-function: ease-in-out; }
+  65%  { transform: scaleY(0.85) skewX(-4deg); }
+  100% { transform: scaleY(1) skewX(0deg); }
+}
+
+/* --- player: shared limb styling --- */
+.shooter__leg path,
+.shooter__arm path {
+  fill: none;
+  stroke: url(#sg-limb);
+  stroke-linecap: round;
+}
+.shooter__shoe { fill: url(#sg-shoe); stroke: rgba(26, 47, 122, 0.3); stroke-width: 1; }
+.shooter__sock { stroke: var(--paper-raised); }
+.shooter__hand { fill: var(--navy-900); }
+.shooter__shadow { fill: rgba(26, 47, 122, 0.18); transform-origin: 62px 196px; animation: shadow-pulse 0.9s ease-out both; }
+
+@keyframes shadow-pulse {
+  0%   { transform: scale(1); opacity: 0.85; animation-timing-function: ease-in; }
+  18%  { transform: scale(0.94); opacity: 0.8; }
+  40%  { transform: scale(0.66); opacity: 0.4; animation-timing-function: ease-out; }
+  62%  { transform: scale(0.78); opacity: 0.55; }
+  78%  { transform: scale(1.07); opacity: 0.92; animation-timing-function: ease-out; }
+  100% { transform: scale(1); opacity: 0.85; }
+}
+
+/* --- player: torso / jersey --- */
+.shooter__jersey { fill: url(#sg-torso); }
+.shooter__shorts { fill: var(--navy-900); }
+.shooter__jersey-trim { fill: var(--orange-500); }
+.shooter__jersey-stripe,
+.shooter__shorts-stripe { fill: var(--orange-500); opacity: 0.9; }
+.shooter__number {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 17px;
+  fill: #ffffff;
+  stroke: var(--orange-600);
+  stroke-width: 0.6px;
+  paint-order: stroke fill;
+}
+
+/* --- player: head / face --- */
+.shooter__head circle:first-child { fill: url(#sg-head); }
+.shooter__headband { fill: var(--orange-500); }
+.shooter__brow { fill: none; stroke: var(--navy-900); stroke-width: 1.3; stroke-linecap: round; }
+.shooter__eye { fill: #ffffff; }
+.shooter__mouth { fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linecap: round; }
+
+/* --- player: whole-body jump timeline --- */
 @keyframes shooter-hop {
-  0%   { transform: translateY(0); }
-  18%  { transform: translateY(-11px); }
-  40%  { transform: translateY(0); }
+  0%   { transform: translateY(0); animation-timing-function: ease-in; }
+  18%  { transform: translateY(7px); animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1); }
+  40%  { transform: translateY(-16px); animation-timing-function: ease-in; }
+  62%  { transform: translateY(-5px); animation-timing-function: ease-in; }
+  78%  { transform: translateY(3px); animation-timing-function: ease-out; }
+  92%  { transform: translateY(-1px); animation-timing-function: ease-out; }
   100% { transform: translateY(0); }
 }
-@keyframes shooter-arm {
-  0%   { transform: rotate(15deg); }
-  10%  { transform: rotate(-70deg); }
-  22%  { transform: rotate(-175deg); }
-  38%  { transform: rotate(-190deg); }
-  70%  { transform: rotate(-165deg); }
-  100% { transform: rotate(-150deg); }
+.shooter { animation: shooter-hop 0.9s both; }
+
+@keyframes leg-bend {
+  0%   { transform: scaleY(1); animation-timing-function: ease-in; }
+  18%  { transform: scaleY(0.82); animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1); }
+  40%  { transform: scaleY(1.06); animation-timing-function: ease-in; }
+  62%  { transform: scaleY(1); }
+  78%  { transform: scaleY(0.88); animation-timing-function: ease-out; }
+  92%  { transform: scaleY(1.03); animation-timing-function: ease-out; }
+  100% { transform: scaleY(1); }
 }
-.shooter {
-  position: absolute;
-  left: 5px;
-  bottom: 0;
-  width: 50px;
-  height: 90px;
-  animation: shooter-hop 1.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+.shooter__leg--left { transform-origin: 51px 140px; animation: leg-bend 0.9s both; }
+.shooter__leg--right { transform-origin: 73px 140px; animation: leg-bend 0.9s both; }
+
+@keyframes shooter-arm-throw {
+  0%   { transform: rotate(18deg); animation-timing-function: ease-in; }
+  18%  { transform: rotate(42deg); animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+  38%  { transform: rotate(-186deg); animation-timing-function: ease-out; }
+  46%  { transform: rotate(-202deg); animation-timing-function: ease-in-out; }
+  62%  { transform: rotate(-176deg); animation-timing-function: ease-in-out; }
+  78%  { transform: rotate(-162deg); animation-timing-function: ease-out; }
+  100% { transform: rotate(-155deg); }
 }
-.shooter__head {
-  position: absolute; left: 18px; top: 0;
-  width: 15px; height: 15px;
-  border-radius: 50%;
-  background: var(--navy-900);
+.shooter__arm--throw { transform-origin: 83px 91px; animation: shooter-arm-throw 0.9s both; }
+
+@keyframes shooter-arm-guide {
+  0%   { transform: rotate(-15deg); animation-timing-function: ease-in; }
+  18%  { transform: rotate(-20deg); animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+  38%  { transform: rotate(-55deg); animation-timing-function: ease-in-out; }
+  55%  { transform: rotate(-48deg); animation-timing-function: ease-in; }
+  78%  { transform: rotate(-25deg); animation-timing-function: ease-out; }
+  100% { transform: rotate(-15deg); }
 }
-.shooter__torso {
-  position: absolute; left: 16px; top: 16px;
-  width: 19px; height: 30px;
-  border-radius: 7px;
-  background: var(--navy-900);
+.shooter__arm--guide { transform-origin: 41px 91px; animation: shooter-arm-guide 0.9s both; }
+
+@keyframes hand-snap {
+  0%   { transform: rotate(0deg); }
+  40%  { transform: rotate(-42deg); animation-timing-function: ease-out; }
+  100% { transform: rotate(-18deg); }
 }
-.shooter__leg {
-  position: absolute; top: 45px;
-  width: 6px; height: 27px;
-  border-radius: 3px;
-  background: var(--navy-900);
-}
-.shooter__leg--left { left: 18px; transform: rotate(9deg); }
-.shooter__leg--right { left: 27px; transform: rotate(-11deg); }
-.shooter__arm {
-  position: absolute; top: 19px;
-  width: 6px; height: 23px;
-  border-radius: 3px;
-  transform-origin: top center;
-  animation: shooter-arm 1.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-.shooter__arm--throw { left: 30px; background: var(--navy-900); }
-.shooter__arm--guide { left: 14px; background: #2a4296; animation-delay: 0.05s; }
-.shooter__shadow {
-  position: absolute; left: 0; bottom: -5px;
-  width: 50px; height: 7px;
-  border-radius: 50%;
-  background: rgba(26, 47, 122, 0.16);
+.shooter__arm--throw .shooter__hand {
+  transform-origin: 100px 127px;
+  animation: hand-snap 0.2s ease-out 0.33s both;
 }
 
 /* --- ball in flight --- */
 @keyframes ball-arc {
-  0%   { transform: translate(0, 0) rotate(0deg); }
-  14%  { transform: translate(12px, -27px) rotate(90deg); }
-  46%  { transform: translate(93px, -135px) rotate(340deg); }
-  72%  { transform: translate(164px, -79px) rotate(560deg); }
-  84%  { transform: translate(180px, -53px) rotate(640deg); }
-  100% { transform: translate(184px, -1px) rotate(720deg); }
+  0%   { transform: translate(0, 0) rotate(0deg); animation-timing-function: ease-out; }
+  22%  { transform: translate(12px, -18px) rotate(110deg); animation-timing-function: ease-out; }
+  38%  { transform: translate(32px, -44px) rotate(250deg); animation-timing-function: ease-out; }
+  54%  { transform: translate(63px, -62px) rotate(400deg); animation-timing-function: ease-in-out; }
+  68%  { transform: translate(98px, -64px) rotate(540deg); animation-timing-function: ease-in; }
+  82%  { transform: translate(128px, -46px) rotate(660deg); animation-timing-function: ease-in; }
+  93%  { transform: translate(144px, -16px) rotate(760deg); animation-timing-function: ease-out; }
+  100% { transform: translate(147px, -8px) rotate(800deg); }
 }
 .shooter__ball {
-  position: absolute;
-  left: 38px;
-  bottom: 71px;
-  width: 27px;
-  height: 27px;
-  animation: ball-arc 1.7s cubic-bezier(0.32, 0.06, 0.5, 1) both;
+  transform-origin: 90px 113px;
+  animation: ball-arc 1.05s both;
 }
-.shooter__ball-body {
-  width: 27px;
-  height: 27px;
-  border-radius: 50%;
-  overflow: hidden;
-  position: relative;
-  background: radial-gradient(circle at 34% 28%, #ffab68, #e8701a 58%, #bf560f);
-  box-shadow: inset -2px -3px 6px rgba(70, 26, 0, 0.30), 0 4px 10px rgba(26, 47, 122, 0.26);
-}
-.shooter__ball-body::before,
-.shooter__ball-body::after { content: ''; position: absolute; background: rgba(70, 26, 0, 0.5); }
-.shooter__ball-body::before { left: 0; right: 0; top: 50%; height: 1.5px; margin-top: -0.75px; }
-.shooter__ball-body::after { top: 0; bottom: 0; left: 50%; width: 1.5px; margin-left: -0.75px; }
-
-/* --- hoop --- */
-.success-overlay__hoop { position: absolute; right: 8px; bottom: 65px; width: 65px; height: 82px; }
-.success-overlay__hoop-pole {
-  position: absolute; right: 52px; top: 0;
-  width: 8px; height: 82px;
-  border-radius: 2px;
-  background: rgba(26, 47, 122, 0.22);
-}
-.success-overlay__hoop-backboard {
-  position: absolute; right: 37px; top: 1px;
-  width: 38px; height: 30px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1.5px solid rgba(26, 47, 122, 0.24);
-  box-shadow: 0 3px 8px rgba(26, 47, 122, 0.12);
-}
-.success-overlay__hoop-rim {
-  position: absolute; right: 38px; top: 26px;
-  width: 35px; height: 10px;
-  border-radius: 50%;
-  border: 3px solid var(--orange-500);
-}
-.success-overlay__hoop-net {
-  position: absolute; right: 41px; top: 30px;
-  width: 30px; height: 26px;
-  transform-origin: top center;
-  clip-path: polygon(0 0, 100% 0, 76% 100%, 24% 100%);
-  background:
-    repeating-linear-gradient(48deg, rgba(26, 47, 122, 0.4) 0 1.5px, transparent 1.5px 7px),
-    repeating-linear-gradient(-48deg, rgba(26, 47, 122, 0.4) 0 1.5px, transparent 1.5px 7px);
-  animation: hoop-net-swish 0.5s ease-out 1.32s both;
-}
-@keyframes hoop-net-swish {
-  0% { transform: scaleY(1) skewX(0deg); }
-  35% { transform: scaleY(1.55) skewX(5deg); }
-  70% { transform: scaleY(0.86) skewX(-3deg); }
-  100% { transform: scaleY(1) skewX(0deg); }
-}
+.shooter__ball-body circle { fill: url(#sg-ball); }
+.shooter__ball-body path { fill: none; stroke: rgba(70, 26, 0, 0.55); stroke-width: 1.4; }
 
 .success-overlay__result {
   display: flex;
@@ -527,7 +584,7 @@ body {
   flex-shrink: 0;
   align-items: center;
   gap: var(--space-2);
-  animation: overlay-fade-up 0.3s ease-out 1.5s both;
+  animation: overlay-fade-up 0.3s ease-out 1.45s both;
 }
 .success-overlay__title {
   margin: 0;
@@ -537,6 +594,38 @@ body {
   color: var(--navy-900);
 }
 .success-overlay__subtitle { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy-600); }
+
+/* Reduced motion: skip the shot sequence entirely and snap every animated
+   part straight to its settled end-state pose (arm raised overhead, ball
+   resting in the net, result panel already visible). */
+@media (prefers-reduced-motion: reduce) {
+  .success-overlay,
+  .shooter,
+  .shooter__leg--left,
+  .shooter__leg--right,
+  .shooter__shadow,
+  .shooter__arm--throw,
+  .shooter__arm--guide,
+  .shooter__arm--throw .shooter__hand,
+  .shooter__ball,
+  .success-overlay__hoop-net,
+  .success-overlay__hoop-net-lines line,
+  .success-overlay__result {
+    animation: none !important;
+  }
+  .success-overlay { opacity: 1; transform: none; }
+  .shooter { transform: translateY(0); }
+  .shooter__leg--left,
+  .shooter__leg--right { transform: scaleY(1); }
+  .shooter__shadow { transform: scale(1); opacity: 0.85; }
+  .shooter__arm--throw { transform: rotate(-155deg); }
+  .shooter__arm--guide { transform: rotate(-15deg); }
+  .shooter__arm--throw .shooter__hand { transform: rotate(-18deg); }
+  .shooter__ball { transform: translate(147px, -8px) rotate(800deg); }
+  .success-overlay__hoop-net,
+  .success-overlay__hoop-net-lines line { transform: scaleY(1) skewX(0deg); }
+  .success-overlay__result { opacity: 1; transform: translateY(0); }
+}
 
 /* ==========================================================================
    Side panel

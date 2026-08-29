@@ -33,26 +33,143 @@
           <div class="court-layer court-layer--balls" id="ball-layer"></div>
 
           <div class="success-overlay" id="success-overlay" hidden>
-            <div class="success-overlay__scene">
-              <div class="shooter">
-                <div class="shooter__head"></div>
-                <div class="shooter__torso"></div>
-                <div class="shooter__leg shooter__leg--left"></div>
-                <div class="shooter__leg shooter__leg--right"></div>
-                <div class="shooter__arm shooter__arm--throw"></div>
-                <div class="shooter__arm shooter__arm--guide"></div>
-                <div class="shooter__shadow"></div>
-              </div>
-              <div class="shooter__ball" id="success-ball">
-                <div class="shooter__ball-body"></div>
-              </div>
-              <div class="success-overlay__hoop">
-                <div class="success-overlay__hoop-pole"></div>
-                <div class="success-overlay__hoop-backboard"></div>
-                <div class="success-overlay__hoop-rim"></div>
-                <div class="success-overlay__hoop-net"></div>
-              </div>
-            </div>
+            <svg class="success-overlay__scene" width="300" height="198" viewBox="0 0 300 198" role="img" aria-label="Illustration of a player making a jump shot through the hoop" focusable="false">
+              <defs>
+                <radialGradient id="sg-head" cx="34%" cy="26%" r="80%">
+                  <stop offset="0%" style="stop-color:var(--navy-300)"/>
+                  <stop offset="55%" style="stop-color:var(--navy-600)"/>
+                  <stop offset="100%" style="stop-color:var(--navy-900)"/>
+                </radialGradient>
+                <linearGradient id="sg-torso" x1="10%" y1="0%" x2="85%" y2="100%">
+                  <stop offset="0%" style="stop-color:#31459c"/>
+                  <stop offset="55%" style="stop-color:var(--navy-900)"/>
+                  <stop offset="100%" style="stop-color:#101b45"/>
+                </linearGradient>
+                <linearGradient id="sg-limb" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#3f56ab"/>
+                  <stop offset="100%" style="stop-color:var(--navy-900)"/>
+                </linearGradient>
+                <radialGradient id="sg-ball" cx="34%" cy="26%" r="78%">
+                  <stop offset="0%" style="stop-color:#ffab68"/>
+                  <stop offset="58%" style="stop-color:#e8701a"/>
+                  <stop offset="100%" style="stop-color:#bf560f"/>
+                </radialGradient>
+                <linearGradient id="sg-board" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#ffffff"/>
+                  <stop offset="100%" style="stop-color:#dbe2f2"/>
+                </linearGradient>
+                <linearGradient id="sg-rim" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:var(--orange-500)"/>
+                  <stop offset="100%" style="stop-color:var(--orange-600)"/>
+                </linearGradient>
+                <linearGradient id="sg-shoe" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:var(--orange-500)"/>
+                  <stop offset="100%" style="stop-color:var(--orange-600)"/>
+                </linearGradient>
+                <radialGradient id="sg-court" cx="46%" cy="112%" r="95%">
+                  <stop offset="0%" style="stop-color:var(--wood-1)"/>
+                  <stop offset="60%" style="stop-color:var(--wood-2)"/>
+                  <stop offset="100%" style="stop-color:var(--wood-3)"/>
+                </radialGradient>
+              </defs>
+
+              <!-- Court floor: stylized, not to architectural scale -->
+              <g class="success-overlay__floor">
+                <path class="success-overlay__floor-boards" d="M -10 198 L 310 198 L 300 110 L 70 110 Z"/>
+                <g class="success-overlay__floor-planks">
+                  <line x1="6" y1="198" x2="76" y2="110"/>
+                  <line x1="46" y1="198" x2="102" y2="110"/>
+                  <line x1="86" y1="198" x2="128" y2="110"/>
+                  <line x1="126" y1="198" x2="154" y2="110"/>
+                  <line x1="166" y1="198" x2="180" y2="110"/>
+                  <line x1="206" y1="198" x2="206" y2="110"/>
+                  <line x1="246" y1="198" x2="232" y2="110"/>
+                  <line x1="286" y1="198" x2="258" y2="110"/>
+                </g>
+                <path class="success-overlay__floor-arc" d="M 84 198 Q 132 118 235 112 Q 284 116 300 152"/>
+                <path class="success-overlay__floor-lane" d="M 280 198 L 192 198 L 202 132 L 270 132 Z"/>
+                <path class="success-overlay__floor-circle" d="M 202 132 A 34 15 0 0 1 270 132"/>
+              </g>
+
+              <!-- Hoop -->
+              <g class="success-overlay__hoop">
+                <rect class="success-overlay__hoop-pole" x="231.5" y="44" width="7" height="154" rx="1.5"/>
+                <rect class="success-overlay__hoop-backboard" x="212" y="36" width="46" height="38" rx="3"/>
+                <rect class="success-overlay__hoop-square" x="223" y="56" width="24" height="16"/>
+                <path class="success-overlay__hoop-net" d="M 219 80 L 251 80 L 244 108 L 226 108 Z"/>
+                <g class="success-overlay__hoop-net-lines">
+                  <line x1="222" y1="80" x2="229" y2="108"/>
+                  <line x1="230" y1="80" x2="234" y2="108"/>
+                  <line x1="235" y1="80" x2="235" y2="108"/>
+                  <line x1="240" y1="80" x2="236" y2="108"/>
+                  <line x1="248" y1="80" x2="241" y2="108"/>
+                </g>
+                <ellipse class="success-overlay__hoop-rim" cx="235" cy="80" rx="20" ry="4.5"/>
+              </g>
+
+              <!-- Player -->
+              <g class="shooter">
+                <ellipse class="shooter__shadow" cx="62" cy="196" rx="28" ry="4.5"/>
+
+                <g class="shooter__leg shooter__leg--left">
+                  <path d="M 51 140 L 47 165" stroke-width="11"/>
+                  <path d="M 47 165 L 44 189" stroke-width="8"/>
+                  <path class="shooter__sock" d="M 41.5 184 L 47.5 184" stroke-width="7"/>
+                  <path class="shooter__shoe" d="M 33 190 Q 33 184 40 184 L 49 184 Q 55 184 55 190 L 55 194 Q 55 197 51 197 L 35 197 Q 32 197 32 194 Z"/>
+                </g>
+                <g class="shooter__leg shooter__leg--right">
+                  <path d="M 74 140 L 77 165" stroke-width="11"/>
+                  <path d="M 77 165 L 80 189" stroke-width="8"/>
+                  <path class="shooter__sock" d="M 76.5 184 L 82.5 184" stroke-width="7"/>
+                  <path class="shooter__shoe" d="M 68 190 Q 68 184 74 184 L 83 184 Q 90 184 90 190 L 90 194 Q 90 197 87 197 L 71 197 Q 68 197 68 194 Z"/>
+                </g>
+
+                <g class="shooter__torso">
+                  <rect class="shooter__shorts" x="41" y="122" width="42" height="25" rx="9"/>
+                  <rect class="shooter__jersey" x="39" y="81" width="46" height="48" rx="10"/>
+                  <path class="shooter__jersey-trim" d="M 53 81 L 62 91 L 71 81 Z"/>
+                  <rect class="shooter__jersey-stripe" x="39" y="81" width="4" height="48"/>
+                  <rect class="shooter__jersey-stripe" x="81" y="81" width="4" height="48"/>
+                  <rect class="shooter__shorts-stripe" x="41" y="122" width="4" height="25"/>
+                  <rect class="shooter__shorts-stripe" x="79" y="122" width="4" height="25"/>
+                  <text class="shooter__number" x="62" y="110" text-anchor="middle" dominant-baseline="central">23</text>
+                </g>
+
+                <g class="shooter__arm shooter__arm--guide">
+                  <path d="M 41 91 L 31 109" stroke-width="9"/>
+                  <path d="M 31 109 L 25 124" stroke-width="7"/>
+                  <circle class="shooter__hand" cx="24" cy="127" r="5"/>
+                </g>
+
+                <g class="shooter__arm shooter__arm--throw">
+                  <path d="M 83 91 L 94 108" stroke-width="9"/>
+                  <path d="M 94 108 L 100 124" stroke-width="7"/>
+                  <g class="shooter__hand">
+                    <circle cx="100" cy="127" r="5.5"/>
+                  </g>
+                </g>
+
+                <g class="shooter__head">
+                  <circle cx="62" cy="65" r="12.5"/>
+                  <path class="shooter__headband" d="M 49.5 62 A 12.5 12.5 0 0 1 74.5 62 L 74.5 57 L 49.5 57 Z"/>
+                  <path class="shooter__brow" d="M 55.5 61.5 L 60 60 M 64 60 L 68.5 61.5"/>
+                  <circle class="shooter__eye" cx="57.5" cy="65" r="1.4"/>
+                  <circle class="shooter__eye" cx="66.5" cy="65" r="1.4"/>
+                  <path class="shooter__mouth" d="M 58 71.5 Q 62 73.5 66 71.5"/>
+                </g>
+              </g>
+
+              <!-- Ball -->
+              <g class="shooter__ball" id="success-ball">
+                <g class="shooter__ball-body">
+                  <circle cx="90" cy="113" r="11"/>
+                  <path d="M 79 113 A 11 11 0 0 0 101 113"/>
+                  <path d="M 90 102 A 11 11 0 0 1 90 124"/>
+                  <path d="M 81.5 106.5 A 11 11 0 0 0 98.5 119.5"/>
+                  <path d="M 81.5 119.5 A 11 11 0 0 1 98.5 106.5"/>
+                </g>
+              </g>
+            </svg>
             <div class="success-overlay__result">
               <div class="success-overlay__title">Nothing but net</div>
               <div class="success-overlay__subtitle" id="success-subtitle"></div>

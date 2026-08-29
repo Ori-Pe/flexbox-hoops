@@ -5,11 +5,15 @@ import { test, expect } from '@playwright/test';
 const LEVEL_1_SOLUTION = 'justify-content: flex-end;';
 
 // The success-overlay scene runs several CSS animations before it settles into
-// its final ("both" fill-mode) resting state: shooter-hop (1.7s), shooter-arm
-// (1.7s), ball-arc (1.7s), and hoop-net-swish (0.5s starting at a 1.32s delay,
-// i.e. finishing at 1.82s). Wait past all of them before measuring geometry so
-// assertions reflect the settled scene, not a mid-animation frame.
-const OVERLAY_SETTLE_MS = 2200;
+// its final ("both" fill-mode) resting state: shooter-hop / leg-bend /
+// shooter-arm-throw / shooter-arm-guide / shadow-pulse (0.9s each), ball-arc
+// (1.05s), hand-snap (0.2s starting at a 0.33s delay, finishing at 0.53s),
+// hoop-net-swish (0.4s starting at a 0.98s delay, finishing at 1.38s), and
+// finally .success-overlay__result's fade-in (0.3s starting at a 1.45s delay,
+// finishing at 1.75s) once the ball has resolved through the net. Wait past
+// all of them before measuring geometry so assertions reflect the settled
+// scene, not a mid-animation frame.
+const OVERLAY_SETTLE_MS = 2000;
 
 const SHOOTER_AND_HOOP_PARTS = [
   '.shooter__head',
